@@ -1,0 +1,106 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Locking Entities
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Locking Entities
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Locking Entities
+
+paths: {}
+
+components:
+  responses:
+    # ------------------------------------------------------------------------
+    AcquiredLock:
+      description: >-
+        Response body - Acquire a lock on an entity
+      headers:
+        Location:
+          schema:
+            type: string
+            format: uri-reference
+          description: >-
+            The following header redirects the SOVD client for requesting the status:
+            Location: /{entity-path}/locks/{lock-id}
+          example: https://sovd.server/v1/components/PowerSteering/locks/15c3e824-8278-44e1-b0b2-3bc16e4522f2
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: >-
+                  The identifier of the created lock resource.
+            example: 
+              id: "15c3e824-8278-44e1-b0b2-3bc16e4522f2"
+
+    AcquiredLocks:
+      description: >-
+        Response Body - Collection of Locks acquired for the entity.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: string
+                      description: >-
+                        The identifier of an acquired lock of an entity.
+                    owned:
+                      type: boolean
+                      description: >-
+                        If true, the SOVD client which performed the request owns the lock.
+                        The value is always false if the entity is not locked.
+            example: 
+              items:
+                - id: 15c3e824-8278-44e1-b0b2-3bc16e4522f2
+                  owned: true
+
+    LockDetails:
+      description: >-
+        Response Body - Get a single active lock of an entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - lock_expiration
+            properties:
+              lock_expiration:
+                type: string
+                format: date-time
+                description: >-
+                  A date-time string, that defines at which point in time the lock
+                  expires and would therefore be automatically released by the SOVD server.
+                  The SOVD server always returns an absolute date and time in UTC based on the
+                  relative time provided by the SOVD client.
+            example: 
+              lock_expiration: "2021-06-22T11:47:22Z"
+
+

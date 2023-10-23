@@ -1,0 +1,73 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Access to Capability Description Content
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Access to Capability Description Content
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{any-path}/docs:
+    get:
+      tags:
+        - capabilities
+      description: >-
+        For entities, resources, and resource collections, a corresponding
+        online capability description can be requested at the SOVD API.
+        The resulting online capability description is a self-contained,
+        valid OpenAPI specification. The description contains information
+        which refers to the creation, reading, updating or deleting of the
+        respective element and its direct child elements as defined by the SOVD standard.
+        An online capability description is requested for a data resource
+        /{entity-path}/data/{data-id} via GET /{entity-path}/data/{data-id}/docs.
+        For example, to enrich the responses with additional details such as
+        the underlying schema of the response using the “include-schema”
+        query parameter on the request. Moreover, for each supported HTTP method
+        all defined HTTP response status codes are documented together with
+        the data model of the resulting response payloads.
+      parameters:
+        - $ref: '#/components/parameters/AnyPath'
+      responses:
+        "200":
+          $ref: '#/components/responses/OnlineCapabilityDescription'
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+components:
+  parameters:
+
+  # ------------------------------------------------------------------------
+    AnyPath:
+      name: any-path
+      description: >-
+        Path to entity, resource or resource collection for which to
+        request the online capability description.
+      in: path
+      required: true
+      schema:
+        type: string
+
+  # ------------------------------------------------------------------------
+  responses:
+    OnlineCapabilityDescription:
+      description: >-
+        The online capability description of the underlying resource
+        in form of an OpenAPI specification in JSON document format.
+      content:
+        application/json:
+          schema:
+            $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.yaml

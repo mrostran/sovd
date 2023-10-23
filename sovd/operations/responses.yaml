@@ -1,0 +1,218 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Operations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Operations Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Operations Resource
+
+paths: {}
+
+components:
+  responses:
+
+    # ------------------------------------------------------------------------
+    Operations:
+      description: >-
+        Response: Retrieve list of all available operations from an entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/OperationDescription
+                description: >-
+                  The list of all operations of the entity.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+            example:
+              items:
+                - id: SteeringAngleControl
+                  name: Control the steering angle value
+                  translation_id: tid1928653
+                  proximity_proof_required: false
+                  asynchronous_execution: true
+
+
+    # ------------------------------------------------------------------------
+    OperationDetails:
+      description: >-
+        Response: Get details of single operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - item
+            properties:
+              item:
+                $ref: types.yaml#/components/schemas/OperationDescription
+                description: >-
+                  Description of the operation
+              proximity_challenge:
+                $ref: types.yaml#/components/schemas/ProximityChallenge
+                description: >-
+                  If proximity_proof_required is true, the challenge is provided.
+                  The challenge is used for proving proximity to the vehicle.
+              modes:
+                type: object
+                additionalProperties:
+                  $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                  description: >-
+                    The modes in which the entity shall be for executing the operation. An SOVD client shall set
+                    the entity into one of the listed modes before executing the operation.
+                    If the attribute is not present, the SOVD server does not provide the information.
+                    If it is empty, the operation can be executed in any mode.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+            example:
+              item:
+                id: SteeringAngleControl
+                name: Control the steering angle value
+                translation_id: tid1928653
+                proximity_proof_required: false
+                asynchronous_execution: true
+              modes:
+                session: EXTENDED
+
+
+    # ------------------------------------------------------------------------
+    StartExecutionSynchronous:
+      description: >-
+        Response: Read Configurations
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              parameters:
+                type: object
+                description: >-
+                  Response parameters of the operation depending on the capability.
+              error:
+                $ref: ../commons/errors.yaml#/components/schemas/GenericError
+                description: >-
+                  Condition: Set if an error occurred when the operation is executed.
+
+    # ------------------------------------------------------------------------
+    StartExecutionAsynchronous:
+      description: >-
+        Response: Start execution of an operation - asynchronous execution
+      headers:
+        Location:
+          schema:
+            type: string
+            format: uri-reference
+          description: >-
+            The response for status code 202 includes the following header to redirect the SOVD client for requesting the status:
+            Location: /{entity-path}/operations/{operation-id}/executions/{execution-id}
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: >-
+                  Identifier for monitoring the execution of the operation and
+                  performing additional operations on the execution instance (e.g., freeze)
+              status:
+                $ref: types.yaml#/components/schemas/ExecutionStatus
+            example:
+              id: "fd34f39d-06e7-494b-af2d-8928e1458fb0"
+              status: "running"
+
+
+    # ------------------------------------------------------------------------
+    GetExecutions:
+      description: >-
+        Response: Get executions of an operation
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  List of identifiers of all execution instances of the operation
+            example:
+              items:
+                - "fd34f39d-06e7-494b-af2d-8928e1458fb0"
+
+    # ------------------------------------------------------------------------
+    GetExecutionStatus:
+      description: >-
+        Response: Get the status of an operation execution
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - capability
+            properties:
+              status:
+                $ref: types.yaml#/components/schemas/ExecutionStatus
+                description: >-
+                  Status of the executed operation.
+              capability:
+                $ref: types.yaml#/components/schemas/Capability
+                description: >-
+                  Capability executed at the moment. This is either execute
+                  or the capability which has been used with a PUT request
+              parameters:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  Response parameters of the operation depending on the capability.
+                  The type of the value is defined by the schema.
+                  Condition: If the capability provides response parameters.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+              error:
+                type: array
+                items:
+                  $ref: ../commons/errors.yaml#/components/schemas/DataError
+                description: >-
+                  Condition: Set if an error occurred when the operation is executed.
+                  The path attribute references erroneous parameters of the operation execution.
+                  If the path attribute is “/” then the operation itself failed
+                  and the error describes the reason for the failure.
+            example:
+              status: running
+              capability: execute
+              parameters:
+                control-type: absolute
+                angle: 120.3
+
+

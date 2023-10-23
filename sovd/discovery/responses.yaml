@@ -1,0 +1,172 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Data Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Data Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Data Resource
+
+paths: {}
+
+components:
+  responses:
+
+    # ------------------------------------------------------------------------
+    discoveredEntities:
+      description: >-
+        Response Body - Discover contained entities of entity collections
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                description: >-
+                  Array of entity references.
+                type: array
+                items:
+                  $ref: ../commons/types.yaml#/components/schemas/EntityReference
+
+
+    # ------------------------------------------------------------------------
+    discoveredEntitiesWithSchema:
+      description: >-
+        Response Body - Discover contained entities of entity collections
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                description: >-
+                  Array of entity references.
+                type: array
+                items:
+                  $ref: ../commons/types.yaml#/components/schemas/EntityReference
+              schema:
+                  $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+
+    # ------------------------------------------------------------------------
+    discoveredEntityCapabilities:
+      description: >-
+        The response body contains a property for each supported resource and related collection.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - name
+            properties:
+              id:
+                description: >-
+                  Entity-Id
+                type: string
+                example: "AdvancedLaneKeeping"
+              name:
+                description: >-
+                  Name of the Entity
+                type: string
+                example: "Advanced Lane Keeping"
+              translation_id:
+                description: >-
+                  Identifier for translating the name
+                type: string
+              variant:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  Identification of the variant
+              configurations:
+                description: >-
+                  A reference to the configurations collection
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/configurations"
+              bulk-data:
+                description: >-
+                  A reference to the bulk-data collection
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/bulk-data"
+              data:
+                description: >-
+                  A reference to the data collection
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/data"
+              data-lists:
+                description: >-
+                  A reference to the data-lists collection
+                type: string
+                format: uri-reference
+              faults:
+                description: >-
+                  A reference to faults collection
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/faults"
+              operations:
+                description: >-
+                  A reference to the operations collections
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/operations"
+              updates:
+                description: >-
+                  A reference to the updated collection
+                type: string
+                format: uri-reference
+              modes:
+                description: >-
+                  A reference tot the modes collection
+                type: string
+                format: uri-reference
+              relatedapps:
+                description: >-
+                  A reference to the reference-collection providing the apps (Only available for components)
+                type: string
+                format: uri-reference
+              relatedcomponents:
+                description: >-
+                  A reference to the reference-collection providing the components (Only available for areas)
+                type: string
+                format: uri-reference
+              subareas:
+                description: >-
+                  A reference to the reference-collection providing the subareas (Only available for areas)
+                type: string
+                format: uri-reference
+              subcomponents:
+                description: >-
+                  A reference to the reference-collection providing the subcomponents (Only available for components)
+                type: string
+                format: uri-reference
+              locks:
+                description: >-
+                  A reference to the reference-collection locks
+                type: string
+                format: uri-reference
+              logs:
+                description: >-
+                  A reference to the resource logs
+                type: string
+                format: uri-reference
+                example: "https://sovd.server/v1/apps/AdvancedLaneKeeping/logs"

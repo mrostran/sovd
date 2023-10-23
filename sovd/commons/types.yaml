@@ -1,0 +1,189 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Value Data Types
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Value Data Types
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Data types for representing basic values used by multiple services
+
+paths: {}
+
+components:
+  # ==========================================================================
+  # Schema definitions
+  schemas:
+    # ------------------------------------------------------------------------
+    AnyValue:
+      anyOf:
+        - type: string
+        - type: number
+        - type: integer
+        - type: boolean
+        - type: array
+          items: {}
+        - type: object
+
+    OpenApiSchema:
+      $ref: https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.yaml#/$defs/schema
+      description: >-
+        The schema definition of the response.
+        Condition: Only provided if the query parameter include-schema is true.
+
+    # ------------------------------------------------------------------------
+    DataError:
+      description: >-
+        Generic definition of an error
+      type: object
+      required:
+        - path
+        - error
+      properties:
+        path:
+          type: string
+          format: json-pointer
+          description: >-
+            JSON Pointer pointing to the erroneous value
+        error:
+          $ref: ../commons/errors.yaml#/components/schemas/GenericError
+
+    # ------------------------------------------------------------------------
+    EntityReference:
+      description: >-
+        EntityReference type
+      type: object
+      required:
+        - id
+        - name
+        - href
+      properties:
+        id:
+          type: string
+          description: >-
+            Identifier of the entity
+        name:
+          type: string
+          description: >-
+            Name of the entity.
+        translation_id:
+          type: string
+          description: >-
+            Identifier for translating the name
+        href:
+          type: string
+          format: uri-reference
+          description: >-
+            URI of the subordinate entity including {base_uri}.
+
+    # ------------------------------------------------------------------------
+    DataCategory:
+      description: >-
+        The categories identData, currentData and sysInfo are predefined by SOVD. OEM-specific
+        categories can be included alpha-numeric characters, hyphens, and underscores
+        and have to start with x-<oem>
+      type: string
+      pattern: ^[A-Za-z0-9_-]+$
+      example: currentData
+
+    # ------------------------------------------------------------------------
+    Value:
+      type: object
+      required:
+        - id
+        - data
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier for a value
+        data:
+          type: object
+          description: >-
+            Retrieved value of the entity
+        metadata:
+          $ref: "#/components/schemas/ValueMetadata"
+        error:
+          $ref: ../commons/types.yaml#/components/schemas/DataError
+
+    # ------------------------------------------------------------------------
+    ListOfValues:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Value"
+
+    # ------------------------------------------------------------------------
+    ValueMetadata:
+      description: >-
+        Description of a value
+      type: object
+      required:
+        - id
+        - name
+        - category
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier for a value
+          example: DriverWindow
+        name:
+          type: string
+          description: >-
+            Name of the data value
+          example: Position of driver window
+        translation_id:
+          type: string
+          description: >-
+            Identifier for translating the data’s name
+        category:
+          $ref: "#/components/schemas/DataCategory"
+        groups:
+          description: >-
+            The identifiers of the groups to which the resource belongs to.
+          type: array
+          items:
+            type: string
+            example: front
+
+    # ------------------------------------------------------------------------
+    ReadValue:
+      description: >-
+        Single data value
+      type: object
+      required:
+        - id
+        - data
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier for a value
+        data:
+          $ref: ../commons/types.yaml#/components/schemas/AnyValue
+          description: >-
+            The value of the data. The type of the value is defined by the schema.
+        errors:
+          type: array
+          description: >-
+            Condition: Only set, if the value data represents an error and
+            this attribute describes the error more precisely.
+          items:
+            $ref: ../commons/errors.yaml#/components/schemas/DataError
+        schema:
+            $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema

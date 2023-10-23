@@ -1,0 +1,218 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for software updates
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for software updates
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: SOVD API for software updates
+
+servers:
+  - url: https://vehicle.api
+
+components:
+  # ------------------------------------------------------------------------
+  responses:
+    UpdateStatusLocation:
+      description: >-
+        Update package identifier
+      headers:
+        Location:
+          schema:
+            type: string
+            format: uri
+          description: >-
+            The URI to the newly created example. <br>
+            /{entity-path}/updates/{update-package-id}/status
+
+    UpdateDetail:
+      description: >-
+        The request was successful.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - update_name
+              - size
+            properties:
+              id:
+                description: >-
+                  Identifier of the update package.
+                  Condition: Only provided if the path parameter update-package-id autonomous was used.
+                type: string
+              update_name:
+                description: >-
+                  Name of the update
+                type: string
+              automated:
+                description: >-
+                  Specifies whether the update package can be installed automatedly or not. If missing, the attribute defaults to false.
+                type: boolean
+              origin:
+                description: >-
+                  List of origins for which the update package is applicable. If the attribute is left out or empty, any origin is applicable.
+                type: array
+                items:
+                  $ref: 'types.yaml#/components/schemas/UpdateOrigins'
+              update_translation_id:
+                description: >-
+                  Translation identifier for the update_name.
+                type: string
+              notes:
+                description: >-
+                  Release notes for the updates, may also be a URI.
+                type: string
+              notes_translation_id:
+                description: >-
+                  Translation identifier for the notes.
+                type: string
+              user_activity:
+                description: >-
+                  Activities which have to be performed by the user after the update.
+                type: string
+              user_activity_translation_id:
+                description: >-
+                  Translation identifier for the user_activity.
+                type: string
+              preconditions:
+                description: >-
+                  Preconditions which shall be fulfilled for installing the update (e.g., doors locked, parking, …).
+                  In general, not being able to fulfill the preconditions would block the preparation of the update.
+                type: string
+              preconditions_transaltion_id:
+                description: >-
+                  Translation identifier for the preconditions.
+                type: string
+              execution_conditions:
+                description: >-
+                  Description of the conditions which are required for executing the update. May only be set if status is completed.
+                type: string
+              duration:
+                description: >-
+                  Time for which the vehicle will not be available when the update is installed and activated.
+                  The time is defined in seconds.
+                  If not set, the availability of the vehicle would not be affected.
+                type: integer
+              size:
+                description: >-
+                  The download size of the update. The size is defined in kilo bytes.
+                type: integer
+              updated_components:
+                description: >-
+                  A list of Components to be updated.
+                  The URIs are in the form of {entity-path}.
+                type: array
+                items:
+                  type: string
+                  format: uri-reference
+              affected_components:
+                description: >-
+                  The list documents which Components may have a different behavior etc.
+                  The focus lies on user-perceived functions and Components.
+                  The URIs are in the form of {entity-path}.
+                type: array
+                items:
+                  type: string
+                  format: uri-reference
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+
+    UpdatePackageId:
+      description: >-
+        The request was successful.
+      headers:
+        Location:
+          schema:
+            type: string
+            format: uri
+          description: >-
+            The URI to the newly created example. <br>
+            /{entity-path}/updates/{update-package-id}/status
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                description: >-
+                  Identifier for the update package created by the SOVD server.
+                type: string
+
+    UpdateStatus:
+      description: >-
+        Update package identifier
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - phase
+              - status
+            properties:
+              phase:
+                description: >-
+                  Current phase of the update process.
+                $ref: 'types.yaml#/components/schemas/Phase'
+              status:
+                description: >-
+                  Status of the preparation or execution.
+                $ref: "types.yaml#/components/schemas/Status"
+              progress:
+                description: >-
+                  Progress of the preparation or execution in percent.
+                type: integer
+              subprogress:
+                description: >-
+                  Progress of the updated entities.
+                type: array
+                items:
+                  $ref: "types.yaml#/components/schemas/Progress"
+              step:
+                description: >-
+                  Description of the current step.
+                type: string
+              step_translation_id:
+                description: >-
+                  Translation identifier for the step.
+                type: string
+              error:
+                description: >-
+                  Only set if status is failed.
+                $ref: '../commons/errors.yaml#/components/schemas/GenericError'
+
+    AvailableUpdates:
+      description: >-
+        Update package identifier
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  The list of values for the data resources specified as part of the data list.
+                example:
+                  - autonomous
+                  - ADAS-v2.03.2154
+                  - CAM-v1.18.8643
+

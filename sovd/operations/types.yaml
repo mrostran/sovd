@@ -1,0 +1,101 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Operations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Operations Resource
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types used for Operations Resource
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    OperationDescription:
+      type: object
+      required:
+        - id
+        - proximity_proof_required
+        - asynchronous_execution
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier for an operation
+        name:
+          type: string
+          description: >-
+            Operation name
+        translation_id:
+          type: string
+          description: >-
+            Identifier for translating the operations name
+        proximity_proof_required:
+          type: boolean
+          description: >-
+            If true, the execution of the operation requires a proof of proximity.
+            An SOVD client can use this information to filter operations
+            in advance if a proximity proof cannot be provided.
+            If true, the offline Capability description includes the attribute
+            x-sovd-proximity-proof-required in the PathItem object.
+        asynchronous_execution:
+          type: boolean
+          description: >-
+            If true, the execution of the operation is asynchronous.
+            If true, the offline Capability description includes the attribute
+            x-sovd-asynchronous-execution with the value true in the PathItem object.
+
+    # ------------------------------------------------------------------------
+    ProximityChallenge:
+      type: object
+      required:
+        - challenge
+        - valid_until
+      properties:
+        challenge:
+          type: string
+          description: >-
+            Challenge which has to be solved by the SOVD client to prove proximity.
+        valid_until:
+          type: string
+          format: date-time
+          description: >-
+            The time until which the challenge is valid.
+
+    # ------------------------------------------------------------------------
+    ExecutionStatus:
+      type: string
+      enum:
+        - running
+        - completed
+        - failed
+      description: >-
+        running: The execution of an operation is running.
+        completed: The execution of an operation has completed successfully.
+        failed: The execution of an operation has terminated with a fault.
+
+    # ------------------------------------------------------------------------
+    Capability:
+      type: string
+      enum:
+        - execute
+        - stop
+        - freeze
+        - reset
+        - status
+      description: >-
+        Operation capabilities

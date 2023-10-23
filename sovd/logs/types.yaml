@@ -1,0 +1,146 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Logging
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Logging
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types for Logging
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    LogEntry:
+      type: object
+      required:
+        - timestamp
+        - context
+        - severity
+        - msg
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: >-
+            Format: RFC3339 (UTC)
+        context:
+          $ref: '#/components/schemas/Context'
+          description: >-
+            Definition of the context of the log message identifying the source of the entry.
+        severity:
+          $ref: '#/components/schemas/Severity'
+        msg:
+          type: string
+          description: The actual log message (text)
+        href:
+          type: string
+          format: uri-reference
+          description: >-
+            Reference to a URI for retrieving the underlying original log file in an application specific format
+      example:
+        timestamp: "2021-07-20T00:00:04.387819Z"
+        context:
+          type: "RFC5424"
+          host: "Linux"
+          process: "systemd"
+          pid: 1
+        severity: "info"
+        msg: "Closed D-Bus User Message Bus Socket"
+        href: "https://sovd.server/v1/components/DrivingComputer/bulk-data/logs/server.log"
+
+    # ------------------------------------------------------------------------
+    Context:
+      type: object
+      oneOf:
+        - $ref: "#/components/schemas/RFC5424Context"
+        - $ref: "#/components/schemas/AUTOSAR_DLTContext"
+
+    # ------------------------------------------------------------------------
+    RFC5424Context:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: RFC5424
+        host:
+          type: string
+        process:
+          type: string
+        pid:
+          type: integer
+      example:
+        type: "RFC5424"
+        host: "Linux"
+        process: "systemd"
+        pid: 1
+
+    # ------------------------------------------------------------------------
+    AUTOSAR_DLTContext:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          const: AUTOSAR_DLT
+        session:
+          type: string
+        session_id:
+          type: string
+        application_id:
+          type: string
+        context_id:
+          type: string
+        message_id:
+          type: string
+      example:
+        type: "AUTOSAR_DLT"
+        session: "SES01"
+        session_id: "0x0001"
+        application_id: "WindowControl"
+        context_id: "STD0"
+        message_id: "msg000012"
+
+    # ------------------------------------------------------------------------
+    Severity:
+      description: SOVD specific datatype defining log-levels
+      type: string
+      enum:
+        - fatal
+        - error
+        - warn
+        - info
+        - debug
+
+    # ------------------------------------------------------------------------
+    LogConfiguration:
+      type: object
+      required:
+        - context
+        - severity
+      properties:
+        context:
+          $ref: '#/components/schemas/Context'
+          description: >-
+            Definition of the context of the log message. Parts not specified in the context are regarded as not set.
+        severity:
+          $ref: '#/components/schemas/Severity'
+          description: >-
+            The severity specifies the log-level for the given context.

@@ -1,0 +1,55 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Target Modes
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Target Modes
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Target Modes
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    ControlStates:
+      description: >-
+        Request: Explicit control of entity states via their defined modes
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - value
+              - mode_expiration
+            properties:
+              value:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  The value to be set for the specified mode.
+              mode_expiration:
+                type: integer
+                description: >-
+                  Defines after how many seconds the mode expires and should
+                  therefore be automatically reset to the mode’s default value.
+                  The capability description shall define the maximum expiration
+                  time and the default value of the mode, using the attribute default.
+            example:
+              value: EXTENDED
+              mode_expiration: 1200
+
+

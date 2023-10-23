@@ -1,0 +1,112 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Data Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Data Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Data Resource
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    DataList:
+      description: >-
+        Request: Creating a data list for reading multiple data values
+        at once from an entity
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - ids
+            properties:
+              ids:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  The data resource identifiers which should be read as part of the data list.
+                example:
+                  - DriverWindow
+                  - PassengerWindow
+                  - RearWindows
+
+
+    # ------------------------------------------------------------------------
+    WriteValue:
+      description: >-
+        Request: Write a data value data to an entity
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  The value of the data. The type of the value is defined by the resource
+              signature:
+                type: string
+                description: >-
+                  Additional security artefact for the data itself.
+                  This is independent from the authentication in the method header.
+
+    # ------------------------------------------------------------------------
+    DataLists:
+      description: >-
+        Response: Retrieve list of all data-lists provided by the entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/DataListEntry
+
+    # ------------------------------------------------------------------------
+    ReadDataList:
+      description: >-
+        Response: Read multiple data values at once from an entity using a data list
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: ../commons/types.yaml#/components/schemas/ReadValue
+                description: >-
+                  The list of values for the data resources specified as part of the data list.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+

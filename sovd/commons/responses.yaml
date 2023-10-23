@@ -1,0 +1,47 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Common Response Definitions
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Common Response Definitions
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Responses used by multiple services
+
+paths: {}
+
+components:
+  # ==========================================================================
+  # Response definitions
+  responses:
+
+    # ------------------------------------------------------------------------
+    GenericError:
+      description: >-
+        An unexpected request occurred
+      content:
+        application/json:
+          schema:
+            $ref: errors.yaml#/components/schemas/GenericError
+
+    # ------------------------------------------------------------------------
+    DataError:
+      description: >-
+        The request body does either not contain all required parameter
+        values or the signature for the provided values is wrong.
+      content:
+        application/json:
+          schema:
+            $ref: errors.yaml#/components/schemas/DataError

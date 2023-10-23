@@ -1,0 +1,44 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Target Modes
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Target Modes
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types used for Target Modes
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    ModeCollectionItem:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: >-
+            The resource identifier of a mode of an entity.
+        name:
+          type: string
+          description: >-
+            The name of a mode of an entity.
+        translation_id:
+          type: string
+          description: >-
+            Translation identifier for the name

@@ -1,0 +1,82 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Error Handling
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Error Handling
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Errors used by multiple services
+
+servers:
+  - url: https://vehicle.api
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    GenericError:
+      description: >-
+        It is recommended that the response body of an error response includes
+        a more detailed description of the error which helps in diagnosing the issue.
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          description: >-
+            SOVD standardized error code
+        vendor_code:
+          type: string
+          description: >-
+            Vendor specific error code
+            Condition: If the error_code is vendor-specific
+            this attribute has to be filled.
+        message:
+          type: string
+          description: >-
+            Message describing the problem in more detail.
+        translation_id:
+          type: string
+          description: >-
+            Identifier for translating the message
+        parameters:
+          type: object
+          description: >-
+            Key-value-list which provides additional information on the error
+
+    # ------------------------------------------------------------------------
+    DataError:
+      description: >-
+        On some occasions an error applies only to parts of a response, e.g.,
+        when reading a data resource. In this case the type DataError is used
+        which includes a path to the erroneous attribute of the response.
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          format: json-pointer
+          description: >-
+            A JSON Pointer describing which element of the response is erroneous.
+        error:
+          $ref: '#/components/schemas/GenericError'
+          description: >-
+            Describes the error more precisely.
+            Condition: The attribute referenced by path contains an error.

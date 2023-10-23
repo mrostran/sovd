@@ -1,0 +1,131 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Configurations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Configurations Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Configurations Resource
+
+paths: {}
+
+components:
+  responses:
+
+    # ------------------------------------------------------------------------
+    Configurations:
+      description: >-
+        Response: Retrieve list of all configurations provided by the entity.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/ConfigurationMetaData
+                description: >-
+                  The list of all configurations provided by the entity.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+            example:
+              items:
+                - id: ALKConfig
+                  name: Configuration for the Advanced Lane Keeping System
+                  type: parameter
+                - id: ObjectRecognitionModel
+                  name: Model of objects to be recognized
+                  type: bulk
+                  version: 1.45.2107
+                  content_type: application/octet-stream
+
+
+    # ------------------------------------------------------------------------
+    ReadConfigurations:
+      description: >-
+        Response: Read Configurations
+      content:
+        application/json:
+          schema:
+            $ref: ../commons/types.yaml#/components/schemas/ReadValue
+          example:
+            id: ALKConfig
+            data:
+              MaximumSpeed: 150
+              MinimumDistanceToLine: 15
+              EmergencyLaneDistanceToLine: 5
+            schema:
+              type: object
+              properties:
+                MaximumSpeed:
+                  type: integer
+                  format: int32
+                  minimum: 0
+                  maximum: 250
+                  x-sovd-unit:
+                    display_name: km/h
+                    physical_dimension:
+                      length: 1
+                      time: -1
+                MinimumDistanceToLine:
+                  type: number
+                  format: float
+                  minimum: 10
+                  maximum: 20
+                  x-sovd-unit:
+                    display_name: cm
+                    physical_dimension:
+                      length: 1
+                EmergencyLaneDistanceToLine:
+                  type: number
+                  format: float
+                  minimum: 5
+                  maximum: 10
+                  x-sovd-unit:
+                    display_name: cm
+                    physical_dimension:
+                      length: 1
+
+        '*/*':
+          schema:
+            type: string
+            format: binary
+            description: >-
+              The content of the response body is OEM specific. Depending on the implementation,
+              the transferred file can use multipart/signed, multipart/form-data with security parameters
+              in a JSON object, or simply application/octet-stream (if it is not confidential information).
+          examples:
+            FormData:
+              description: >-
+                Example using "Content-Type: multipart/form-data; boundary=formdataboundary"
+              value: >-
+                --formdataboundary
+                Content-Disposition: form-data; name="signature"
+                Content-Type: application/json
+                {
+                "signature": "84e0982a082024fac464bc5eb69c0745",
+                }
+
+                --formdataboundary
+                Content-Disposition: form-data; name="ObjectRecognitionModel";
+                Content-Type: application/octet-stream
+                [4D61792074686520666F726365206265207769746820796F75210D0A]
+                --formdataboundary
+
+

@@ -1,0 +1,228 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for software updates
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for software updates
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: SOVD API for software updates
+
+servers:
+  - url: https://vehicle.api
+
+paths:
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/automated:
+    put:
+      tags:
+        - updates
+      description: >-
+        The method starts the automated installation of the update package.
+        For this scenario, the SOVD server and the OEM’s backend have full
+        control over the update process and decide which action can be taken when.
+        The method returns immediately and redirects the SOVD client to a method
+        for requesting the status and progress of the installation.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+      responses:
+        '202':
+          description: >-
+            If no error is detected immediately (e.g., because the update package does not exist)
+          $ref: 'responses.yaml#/components/responses/UpdateStatusLocation'
+        '409':
+          description: >-
+            An update is already in installation and not yet done or aborted.
+          content:
+            application/json:
+              schema:
+                $ref: '../commons/errors.yaml#/components/schemas/GenericError'
+              examples:
+                not_supported:
+                  value:
+                    error_code: update-automated-not-supported
+                    message: The package cannot be installed automatically
+                ongoing:
+                  value:
+                    error_code: update-process-in-progress
+                    message: An update is already in preparation
+                    parameters:
+                        key: id
+                        value: Identifier of update
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/execute:
+    put:
+      tags:
+        - updates
+      description: >-
+        The method starts the installation and activation of the update package. As part of this step the following tasks are performed for example:
+          - Validation if the update package is still installable (e.g., checking the software versions of the updated entities)
+          - Installation of the update on all updated entities
+          - Configuration of the entities
+          - Execution of specific post install actions
+          - Activation of the update (e.g., by switching to B-memory)
+          - Rollback of update in case of an error
+
+        The method returns immediately and redirects the SOVD client to a method for requesting the status and progress of the installation.
+        After the update has been finished, the resource for the update package (and its sub-resources like status) remains existent and an
+        SOVD client can receive the status of an update package. However, the status of the update package cannot be queried indefinitely as
+        an SOVD server implementation may remove the update package resource, e.g., upon SOVD server restart or the retrieval of new update packages.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+      responses:
+        '202':
+          description: >-
+            If no error is detected immediately (e.g., because the identifier does not exist).
+          $ref: 'responses.yaml#/components/responses/UpdateStatusLocation'
+        default:
+          $ref: '../commons/responses.yaml#/components/responses/GenericError'
+
+  /{entity-collection}/{entity-id}/updates:
+    get:
+      tags:
+        - updates
+      description: >-
+        The method returns the available updates for the entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/TargetVersion'
+        - $ref: 'parameters.yaml#/components/parameters/Origin'
+      responses:
+        "200":
+          $ref: 'responses.yaml#/components/responses/AvailableUpdates'
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/prepare:
+    put:
+      tags:
+        - updates
+      description: >-
+        The method starts the preparation of the update package for installation.
+        As part of this step the following tasks are performed for example:
+          - Validates if the update package is still installable (e.g., checking the software versions of the affected entities)
+          - Download of update package from OTA backend
+          - Validation of the integrity of update package
+          - Applying deltas
+          - Installing the update in B-memory
+
+        The method returns immediately and redirects the SOVD
+        client to a method for requesting the status and progress of the preparation.
+        An SOVD server may remove prepared updates after an OEM defined amount of time.
+        An explicit removal of a prepared update by an SOVD client is not provided by
+        the SOVD API as the update is implicitly removed after installation.
+        If an update fails, it is in general not implicitly removed as the prepared package may be used for anoth
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+      responses:
+        '202':
+          description: >-
+            If no error is detected immediately (e.g., because the update package does not exist)
+          $ref: 'responses.yaml#/components/responses/UpdateStatusLocation'
+        default:
+          $ref: '../commons/responses.yaml#/components/responses/GenericError'
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/status:
+    get:
+      tags:
+        - updates
+      description: >-
+        The method returns the status of the preparation or execution of the update.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+      responses:
+        '200':
+          description: >-
+            If no error is detected immediately (e.g., because the identifier does not exist).
+          $ref: 'responses.yaml#/components/responses/UpdateStatus'
+        default:
+          $ref: '../commons/responses.yaml#/components/responses/GenericError'
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}:
+    get:
+      tags:
+        - updates
+      description: >-
+        The method returns detailed information for a given update package.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          $ref: 'responses.yaml#/components/responses/UpdateDetail'
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    delete:
+      tags:
+        - updates
+      description: >-
+        The method deletes an update package from SOVD server.
+        The resource is afterwards not available anymore.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: 'parameters.yaml#/components/parameters/UpdatePackageId'
+      responses:
+        '204':
+          description: >-
+            The request was successful.
+        '405':
+          description: >-
+            Deleting is not foreseen for an autonomous update-package-id.
+        default:
+          $ref: '../commons/responses.yaml#/components/responses/GenericError'
+
+  /updates:
+    post:
+      tags:
+        - updates
+      description: >-
+        The method registers a new update at the SOVD server which can be installed afterwards.
+        After creating the update, the SOVD client has to use the methods described before for
+        installing the update (automated or prepare & execute).
+      parameters:
+        - in: header
+          description: >-
+            OEM-specific
+          name: Content-Type
+          schema:
+            type: string
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '../commons/types.yaml#/components/schemas/AnyValue'
+      responses:
+        '201':
+          $ref: 'responses.yaml#/components/responses/UpdatePackageId'
+        default:
+          $ref: '../commons/responses.yaml#/components/responses/GenericError'
+
+
+
+
+
+

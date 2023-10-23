@@ -1,0 +1,32 @@
+openapi: 3.1.0
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# Service-Oriented Vehicle Diagnostic Authentication API
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: Service-Oriented Vehicle Diagnostic Authentication API
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of ASAM SOVD Authentication API
+  contact:
+    url: https://www.asam.net/project-detail/sovd-service-oriented-vehicle-diagnostics/
+
+servers:
+  - url: https://sovd.server/v1
+
+paths:
+  /authorize:
+    $ref: authentication/authentication.yaml#/paths/~1authorize
+
+  /token:
+    $ref: authentication/authentication.yaml#/paths/~1token

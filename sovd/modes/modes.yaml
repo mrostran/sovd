@@ -1,0 +1,82 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Target Modes
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Target Modes
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/modes:
+    get:
+      tags:
+        - target-modes
+      description: >-
+        This method returns all available modes defined for the given entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/SupportedModes
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/modes/{mode-id}:
+    get:
+      tags:
+        - target-modes
+      description: >-
+        This method returns all the details on the specified mode of the given entity
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/ModeId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/ModeDetails
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    put:
+      tags:
+        - target-modes
+      description: >-
+        The method allows to control the state of the specified mode of the given entity explicitly.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/ModeId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/ControlStates
+      responses:
+        "200":
+          description: Updated Mode resource.
+          $ref: responses.yaml#/components/responses/ControlStates
+        "500":
+          description: >-
+            The SOVD server received an error/negative response from the
+            target entity when trying to set the mode to the provided value
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+

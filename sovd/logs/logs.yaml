@@ -1,0 +1,95 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Logging
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Logging
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/logs/entries:
+    get:
+      tags:
+        - logging
+      description: >-
+        This method provides the log information aggregated by that entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Severity
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/ListOfLogs
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/logs/config:
+    put:
+      tags:
+        - logging
+      description: >-
+        This method configures the log aggregation.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/LoggingConfiguration
+      responses:
+        "204":
+          description: The configuration was accepted.
+        "400":
+          description: Invalid configuration provided
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    get:
+      tags:
+        - logging
+      description: >-
+        This method returns an array of configured SOVD LogConfiguration elements,
+        specifying the different contexts for which a specific log configuration was
+        created with the method Configure SOVD Logging.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/LogConfigurations
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    delete:
+      tags:
+        - logging
+      description: >-
+        This method resets the current configuration to its default.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "204":
+          description: Configuration has been reset successfully.
+        "404":
+          description: The SOVD client tried to reset a configuration which does not exist.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError

@@ -1,0 +1,177 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Bulk Data
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Bulk Data
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/bulk-data:
+    get:
+      tags:
+        - bulk-data
+      description: >-
+        This method provides the list of bulk data categories supported by an entity.
+        The result contains all available and based on the authorization accesible bulk data categories.
+        Certain bulk data categories are hidden based on the user’s authorization.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The bulk data categories supported by the entity.
+          $ref: responses.yaml#/components/responses/AvailableBulkDataCategories
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/bulk-data/{category}:
+    get:
+      tags:
+        - bulk-data
+      description: >-
+        This method provides the list of BulkDataDescriptors for a specific category available
+        and accessible for an SOVD client. The possible categories can be retrieved either using
+        the interactive capability description method Retrieve List of all Bulk Data Categories
+        or the offline capability description.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Category
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/BulkDataMetaData
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    post:
+      tags:
+        - bulk-data
+      description: >-
+        This method uploads bulk data to the SOVD server and creates a resource for the bulk data.
+        The request provides the content as well as any additional information, e.g., security artifacts,
+        which are required to validate the content.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Category
+        - $ref: parameters.yaml#/components/parameters/ContentTypeHeader
+        - $ref: parameters.yaml#/components/parameters/ContentLengthHeader
+        - $ref: parameters.yaml#/components/parameters/ContentDispositionHeader
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/BulkDataUpload
+      responses:
+        "201":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/BulkDataUpload
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    delete:
+      tags:
+        - bulk-data
+      description: This method requests the deletion of all bulk data for the given category.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Category
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/DeleteBulkDataResult
+        "409":
+          description: >-
+            Request cannot be completed due to a general conflict,
+            e.g., none of the bulk data resource could be deleted.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/bulk-data/{category}/{bulk-data-id}:
+    get:
+      tags:
+        - bulk-data
+      description: >-
+        This method downloads the bulk data identified by bulk-data-id and category from the SOVD
+        server. The SOVD server manages how bulk-data-id and category are mapped to the underlying
+        data storage and how the retrieval of the bulk data based on the identifier is performed.
+        The method allows the transfer of a single bulk data.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Category
+        - $ref: parameters.yaml#/components/parameters/BulkDataId
+        - $ref: parameters.yaml#/components/parameters/AcceptHeader
+      responses:
+        "200":
+          description: >-
+            Provides content of the bulk data as part of the response.
+            The content of the response body is OEM specific. Depending on the implementation, the
+            transferred file can use multipart/signed, multipart/form-data with security parameters
+            in a JSON object, or simply application/octet-stream (if it is not confidential information).
+            The example below uses multipart/form-data with a JSON object for storing the signature
+            of the bulk data.
+          $ref: responses.yaml#/components/responses/BulkDataDownload
+        "202":
+          description: >-
+            The SOVD server accepted the request, but the data is not yet ready for retrieval. The SOVD
+            client has to retry the request later on. An SOVD server may use the response header field
+            Retry-After to inform the SOVD client after how many seconds a retry is reasonable.
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                description: Number of seconds after which a retry is reasonable.
+        "307":
+          description: >-
+            Temporary Redirect
+            The URI is provided using the Location response header.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+                description: >-
+                  The SOVD server does not provide access to the resource under the requested URI,
+                  but the SOVDclient has to use a different URI for downloading the bulk data.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    delete:
+      tags:
+        - bulk-data
+      description: This method requests the deletion of a specific bulk data resource of the given category.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Category
+        - $ref: parameters.yaml#/components/parameters/BulkDataId
+      responses:
+        "204":
+          description: The request was successful.
+        "409":
+          description: >-
+            Request cannot be completed because the deletion of the bulk data resource failed,
+            e.g., the bulk data resource cannot be deleted as it is still in use.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError

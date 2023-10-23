@@ -1,0 +1,34 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Parameter Definitions for Logging
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Parameter Definitions for Logging
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of Parameters for Logging
+
+paths: {}
+
+components:
+  parameters:
+    # ------------------------------------------------------------------------
+    Severity:
+      name: severity
+      in: query
+      required: false
+      schema:
+        $ref: types.yaml#/components/schemas/Severity
+

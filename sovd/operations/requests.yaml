@@ -1,0 +1,105 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Operations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Operations Resource
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Operations Resource
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    StartExecution:
+      description: >-
+        Request: Start execution of an operation
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timeout:
+                type: integer
+                description: >-
+                  Timeout after which the SOVD server should terminate the execution
+                  of the operation by using the capability stop. The time is specified in seconds.
+                  For extending the timeout a new control request for the operation
+                  has to be submitted by the SOVD client.
+              parameters:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  Parameters for executing the operation.
+              proximity_response:
+                type: string
+                description: >-
+                  Response to proximity challenge if required by the operation.
+            example:
+              timeout: 120
+              parameters:
+                control-type: absolute
+                angle: 180
+
+    # ------------------------------------------------------------------------
+    StopExecution:
+      description: >-
+        Request: Stop the execution of an operation
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              proximity_response:
+                type: string
+                description: >-
+                  Response to proximity challenge if required by the operation.
+
+
+    # ------------------------------------------------------------------------
+    OtherCapabilities:
+      description: >-
+        Request: Support for execute / freeze / reset and OEM-specific capabilities
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - capability
+            properties:
+              capability:
+                $ref: types.yaml#/components/schemas/Capability
+                description: >-
+                  Capability to be executed (one of execute, freeze,
+                  or reset as well as the OEM specific capabilities.
+              timeout:
+                type: integer
+                description: >-
+                  Timeout after which the SOVD server should terminate the execution of the operation
+                  by using the capability stop. The time is specified in seconds.
+                  For extending the timeout a new control request for the operation
+                  has to be submitted by the SOVD client.
+              parameters:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  Parameters for executing the operation.
+              proximity_response:
+                type: string
+                description: >-
+                  Response to proximity challenge if required by the operation.

@@ -1,0 +1,49 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Logging
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Logging
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Logging
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    LoggingConfiguration:
+      description: >-
+        Request Body - Configure SOVD logging
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/LogConfiguration
+          example:
+            items:
+              - context:
+                  type: "RFC5424"
+                  host: "Linux"
+                  process: "systemd"
+                severity: "warn"

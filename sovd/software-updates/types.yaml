@@ -1,0 +1,102 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for software updates
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for software updates
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: SOVD API for software updates
+
+servers:
+  - url: https://vehicle.api
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    UpdateOrigins:
+      description: >-
+        The retrieval of update packages supports the definition of an origin
+        to specify in which environment or by whom the software update is triggered by the SOVD client.
+      type: object
+      required:
+        - remote
+        - proximity
+      properties:
+        remote:
+          type: string
+          description: >-
+            The update is performed over-the-air and no technician intervention is possible.
+            Based on the requested version, authorization, network connection,
+            etc. the SOVD server (or OEM backend) defines which updates are applicable.
+        proximity:
+          type: string
+          description: >-
+            The update is performed in a workshop and potentially technician intervention is possible.
+
+    # ------------------------------------------------------------------------
+    Phase:
+      type: string
+      enum:
+        - prepare
+        - execute
+      description: >-
+        prepare:  Update preparation
+        execute:  Update execution
+
+    # ------------------------------------------------------------------------
+    Progress:
+      type: object
+      required:
+        - entity
+        - status
+      properties:
+        entity:
+          description: >-
+            URI of the entity.
+          type: string
+          format: uri-reference
+        status:
+          description: >-
+            Status of the preparation or execution.
+          $ref: '#/components/schemas/Status'
+        progress:
+          description: >-
+            Progress of the preparation or execution in percent.
+          type: integer
+        error:
+          description: >-
+            Only set if status is error.
+          $ref: '../commons/errors.yaml#/components/schemas/GenericError'
+
+    # ------------------------------------------------------------------------
+    Status:
+      type: string
+      enum:
+        - pending
+        - inProgress
+        - failed
+        - completed
+      description: >-
+        - phase: prepare
+          - pending:  The preparation of the update has not yet started.
+          - inProgress:  The preparation of the update has started.
+          - failed:  The preparation of the update has failed. Details on the reason are specified in the error attribute.
+          - completed:  The preparation of the update has been completed successfully, but the execution of the update has not yet been requested.
+
+        - phase: execute
+          - pending:  The preparation of the update has been completed, but the update itself has not yet been started.
+          - inProgress:  The installation of the update has started.
+          - failed:  The installation of the update has failed. Details on the reason are specified in the error attribute.
+          - completed:  The installation of the update has been completed successfully.

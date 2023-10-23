@@ -1,0 +1,97 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Data Retrieval
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Data Retrieval
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/configurations:
+    get:
+      tags:
+        - configurations
+      description: >-
+        Provides the configurations provided by an entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/Configurations
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/configurations/{configuration-id}:
+    get:
+      tags:
+        - configurations
+      description: >-
+        This method is used to read a configuration from an entity, which can either be
+        * bulk data or
+        * parameter data (MIME type: application/json)
+        The SOVD standard follows the server-driven content negotiation where the client
+        defines its preferences using the Accept request header. If no Accept request header
+        is provided, the SOVD server returns a default representation.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/ConfigurationId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/ReadConfigurations
+        "406":
+          description: >-
+            bulk data: The configuration cannot be provided in the requested MIME type.
+            parameter data: The configuration cannot be provided as parameter data, i.e., the configuration cannot be provided as JSON.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    put:
+      tags:
+        - configurations
+      description: >-
+        This method is used to write a configuration to an entity, which can either be
+        • bulk data, or
+        • parameter data (MIME type: application/json)
+        The SOVD client shall tell the SOVD server in the Content-Type header, which MIME type is written to it.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/ConfigurationId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/WriteConfiguration
+      responses:
+        "204":
+          description: Configuration written.
+        "400":
+          $ref: ../commons/responses.yaml#/components/responses/DataError
+          description: >-
+            The request body does either not contain all required parameter
+            values or the signature for the provided values is wrong.
+            (only applicable for writing parameter data)
+        "409":
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+          description: >-
+            Unable to write configuration due to unsatisfied precondition.
+            E.g., after satisfying precondition “vehicle not in motion” this should be possible.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError

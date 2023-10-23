@@ -1,0 +1,133 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Locking Entities
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Locking Entities
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/locks:
+    post:
+      tags:
+        - locking
+      description: >-
+        This method acquires a lock from the SOVD server for the given entity to reserve
+        its resources for exclusive access of a single SOVD client, i.e., prevent other
+        SOVD clients from operating on the resources in parallel. Any further requests
+        against the SOVD API towards controlling an operation (actuators, routines, and
+        input control), e.g., start the execution of an operation, is rejected by the SOVD
+        server if the required lock is not acquired by the same SOVD client.
+        Once the lock is not required anymore, the SOVD client can delete the created lock
+        resource by a corresponding DELETE request.
+        In addition, an SOVD client shall provide a relative expiration time after which
+        the SOVD server should release the lock automatically. The SOVD server might reject
+        the requested expiration time if it is too long. As a result, the SOVD server
+        deletes the corresponding lock resource.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/LockRequest
+      responses:
+        "201":
+          description: The SOVD server has successfully created a new lock resource and acquired a lock on all relevant resources.
+          $ref: responses.yaml#/components/responses/AcquiredLock
+        "409":
+          description: The SOVD server rejected the creation of the lock resource.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    get:
+      tags:
+        - locking
+      description: >-
+        The method returns the acquired locks for the given entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/AcquiredLocks
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/locks/{lock-id}:
+    get:
+      tags:
+        - locking
+      description: >-
+        The method returns all the details on the specified lock of the given entity.
+        For extending the expiration of a lock the method described in 6.11.5 has to be invoked.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/LockId
+          description: >-
+            The resource identifier of the lock resource to be requested.
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/LockDetails
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    put:
+      tags:
+        - locking
+      description: >-
+        This method extends an acquired lock by providing a new expiration time.
+        The extension is only valid for the SOVD client that has already acquired the corresponding lock.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/LockId
+          description: >-
+            Identifier of a previous lock owned by the SOVD client.
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/LockRequest
+      responses:
+        "204":
+          description: The request was successful.
+        "409":
+          description: The SOVD server rejected the extension of the lock resource.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    delete:
+      tags:
+        - locking
+      description: >-
+        This method releases an acquired lock by deleting the created lock resource.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/LockId
+          description: >-
+            The resource identifier of the lock resource to be deleted.
+      responses:
+        "204":
+          description: The request was successful.
+        "409":
+          description: The SOVD server rejected the extension of the lock resource.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError

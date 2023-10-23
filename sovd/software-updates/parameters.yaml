@@ -1,0 +1,58 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for software updates
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for software updates
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: SOVD API for software updates
+
+servers:
+  - url: https://vehicle.api
+
+components:
+  parameters:
+
+    # ------------------------------------------------------------------------
+    UpdatePackageId:
+      name: update-package-id
+      description: >-
+        Identifier for the update package
+      in: path
+      required: true
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    TargetVersion:
+      name: target-version
+      description: >-
+        Defines the version which is requested by the SOVD client.
+        This version can be a specific version or a version pattern.
+      in: query
+      required: false
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    Origin:
+      name: origin
+      description: >-
+        Defines from where the update is requested, e.g., inside a workshop or by an OTA update request.
+        Default: remote
+      in: query
+      required: false
+      schema:
+        $ref: 'types.yaml#/components/schemas/UpdateOrigins'

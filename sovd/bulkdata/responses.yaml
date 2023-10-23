@@ -1,0 +1,169 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Bulk Data
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Bulk Data
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Bulk Data
+
+paths: {}
+
+components:
+  responses:
+    # ------------------------------------------------------------------------
+    AvailableBulkDataCategories:
+      description: >-
+        Response Body - Retrieve list of all bulk data categories
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/BulkDataCategory
+                description: >-
+                  The bulk data categories supported by the entity.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+          example:
+            items:
+              - "maps"
+              - "pois"
+              - "logs"
+
+    # ------------------------------------------------------------------------
+    BulkDataMetaData:
+      description: >-
+        Response body - Read bulk data meta data
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/BulkDataDescriptor
+                description: List of BulkDataDescriptors
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+            example:
+              items:
+                - id: "EU"
+                  name: "OSM data for Europe"
+                  mimetype: "application/vnd.osm+xml"
+                - id: "US"
+                  name: "OSM data for the United States of America"
+                  mimetype: "application/vnd.osm+xml"
+
+
+    # ------------------------------------------------------------------------
+    BulkDataDownload:
+      description: >-
+        Response body - Download bulk data
+      content:
+        '*/*':
+          schema:
+            type: string
+            format: binary
+          examples:
+            FormData:
+              description: >-
+                Example using "Content-Type: multipart/form-data; boundary=formdataboundary"
+              value: >-
+                --formdataboundary
+                Content-Disposition: form-data; name="signature"
+                Content-Type: application/json
+                {
+                  "signature": "925b36e5bce4966f6ede24f0f4ec7a56",
+                }
+                --formdataboundary
+                Content-Disposition: form-data; name="GasStations";
+                filename="gas-stations.kml"
+                Content-Type: application/octet-stream
+                [File content]
+                --formdataboundary
+
+    # ------------------------------------------------------------------------
+    BulkDataUpload:
+      description: >-
+        Response body - Upload bulk data
+      headers:
+        Location:
+          description: >-
+            The response includes the following header to redirect the SOVD client to the created bulk data resource:
+            Location: /{entity-path}/bulk-data/{category}/{bulk-data-id}
+          schema:
+            type: string
+            format: uri-reference
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: Bulk data identifier created by the SOVD server to identify the bulk data.
+          example:
+            id: "GasStations"
+
+    # ------------------------------------------------------------------------
+    DeleteBulkDataResult:
+      description: >-
+        Response body - Delete all bulk data defined by category
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - deleted_ids
+              - errors
+            properties:
+              deleted_ids:
+                type: array
+                description: List of deleted bulk data identifiers belonging to the given category
+                items:
+                  type: string
+              errors:
+                type: array
+                description: Bulk data identifiers which could not be deleted and why.
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Bulk data identifier, that could not be deleted.
+                    error:
+                      description: The reason why the bulk data resource could not be deleted.
+                      $ref: ../commons/errors.yaml#/components/schemas/GenericError
+          example:
+            deleted_ids:
+              - "US"
+            errors:
+              - id: "EU"
+                error:
+                  error_code: "vendor-specific"
+                  vendor_code: "unable-to-delete"
+                  message: "Could not delete map currently in use."

@@ -1,0 +1,259 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Data Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Data Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Data Resource
+
+paths: {}
+
+components:
+  responses:
+
+    # ------------------------------------------------------------------------
+    DataCategories:
+      description: >-
+        Response: Data categories provided by an entity.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: "../commons/types.yaml#/components/schemas/DataCategory"
+
+    # ------------------------------------------------------------------------
+    DataGroups:
+      description: >-
+        Response: Retrieve groups supported by a data resource collection.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/ValueGroup
+                example:
+                  - id: front
+                    category: currentData
+                  - id: rear
+                    category: currentData
+
+
+    # ------------------------------------------------------------------------
+    Datas:
+      description: >-
+        Response: Retrieve list of all data provided by the entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: '../commons/types.yaml#/components/schemas/ValueMetadata'
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+            example:
+              items:
+              - id: DriverWindow
+                name: Position of driver window
+                category: currentData
+                groups:
+                  - front
+              - id: PassengerWindow
+                name: Position of passenger window
+                category: currentData
+                groups:
+                  - front
+              - id: RearWindows
+                name: Position of rear windows
+                category: currentData
+                groups:
+                  - rear
+              - id: AppInfo
+                name: Window Control Version Numbers
+                category: identData
+
+
+    # ------------------------------------------------------------------------
+    Data:
+      description: >-
+        Response: Read single data value from an entity
+      content:
+        application/json:
+          schema:
+            $ref: ../commons/types.yaml#/components/schemas/ReadValue
+            examples:
+              id: RearWindows
+              data:
+                PositionLeft: 100
+                PositionRight: 0
+              schema:
+                type: object
+                id: string
+                data:
+                  type: object
+                  properties:
+                    PositionLeft:
+                      type: integer
+                      format: int32
+                      minimum: 0
+                      maximum: 100
+                      x-sovd-unit:
+                        display_name: "%"
+                    PositionRight:
+                      type: integer
+                      format: int32
+                      minimum: 0
+                      maximum: 100
+                      x-sovd-unit:
+                        display_name: "%"
+
+    # ------------------------------------------------------------------------
+    DataLists:
+      description: >-
+        Response: Retrieve list of all data-lists provided by the entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/DataListEntry
+            example:
+              items:
+                - id: 7ab52f10-5ea9-4610-a1de-c414c8265ce4
+                  items:
+                    - id: DriverWindow
+                      name: Position of driver window
+                      category: currentData
+                      groups:
+                        - front
+                    - id: PassengerWindow
+                      name: Position of passenger window
+                      category: currentData
+                      groups:
+                        - front
+                    - id: RearWindows
+                      name: Position of rear windows
+                      category: currentData
+                      groups:
+                        - rear
+
+
+
+    # ------------------------------------------------------------------------
+    ReadDataList:
+      description: >-
+        Response: Read multiple data values at once from an entity using a data list
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: ../commons/types.yaml#/components/schemas/ReadValue
+                description: >-
+                  The list of values for the data resources specified as part of the data list.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+            example:
+              items:
+                - id: DriverWindow
+                  data:
+                    Position: 100
+                - id: PassengerWindow
+                  data:
+                    Position: 100
+                - id: RearWindows
+                  data:
+                    PositionLeft: 100
+                    PositionRight: 0
+
+    # ------------------------------------------------------------------------
+    DataListIdentifier:
+      description: >-
+        Response: Creating a data list for reading multiple data values
+        at once from an entity
+      headers:
+        Location:
+          schema:
+            type: string
+            format: uri-reference
+            examples:
+              - "https://sovd.server/v1/apps/WindowControl/data-lists/7ab52f10-5ea9-4610-a1de-c414c8265ce4"
+          description: >-
+            Redirect the SOVD client to reading the resource for requesting the values.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+                description: >-
+                  The identifier which has to be used for querying the values of the data list.
+                examples:
+                  - "7ab52f10-5ea9-4610-a1de-c414c8265ce4"
+
+    # ------------------------------------------------------------------------
+    DataListGenericError:
+      description: >-
+        The SOVD client request included a resource identifier which does not exist.
+        The identifiers are listed in the error.
+      content:
+        application/json:
+          schema:
+            $ref: ../commons/errors.yaml#/components/schemas/GenericError
+
+    # ------------------------------------------------------------------------
+    DataError:
+      description: >-
+        The request body does either not contain all required parameter values
+        or the signature for the provided values is wrong.
+      content:
+        application/json:
+          schema:
+            $ref: ../commons/errors.yaml#/components/schemas/DataError
+
+

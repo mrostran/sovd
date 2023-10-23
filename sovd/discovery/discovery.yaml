@@ -1,0 +1,120 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Discovery of Entities and Resources
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Discovery of Entities and Resources
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+  # ------------------------------------------------------------------------
+  /{entity-collection}:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method provides the list of contained entities for each requested entity collection
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntitiesWithSchema
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /areas/{area-id}/subareas:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method provides the list of sub-entities for each Area.
+      parameters:
+        - $ref: parameters.yaml#/components/parameters/AreaId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntitiesWithSchema
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /components/{component-id}/subcomponents:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method provides the list of sub-entities for each Component.
+      parameters:
+        - $ref: parameters.yaml#/components/parameters/ComponentId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntitiesWithSchema
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /areas/{area-id}/related-components:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method provides the list of related Components of an Area
+      parameters:
+        - $ref: parameters.yaml#/components/parameters/AreaId
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntities
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /components/{component-id}/related-apps:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method provides the list of related app present on a component
+      parameters:
+        - $ref: parameters.yaml#/components/parameters/ComponentId
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntities
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}:
+    get:
+      tags:
+        - discovery
+      description: >-
+        This method returns the capabilities of an entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/discoveredEntityCapabilities
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+

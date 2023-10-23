@@ -1,0 +1,109 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Fault Data Types
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Fault Data Types
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Data types for representing faults
+
+paths: {}
+
+components:
+  # ==========================================================================
+  # Schema definitions
+  schemas:
+    # ------------------------------------------------------------------------
+    # Schema: ListOfFaults
+    ListOfFaults:
+      description: >-
+        List of all faults of a device
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fault'
+        schema:
+          description: >-
+            Schema for describing the fault response.
+            Condition: Only provided if the query parameter include-schema is true.
+          $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+
+    # ------------------------------------------------------------------------
+    # Schema: Fault
+    Fault:
+      description: >-
+        Description of a single fault
+      type: object
+      required:
+        - code
+        - fault_name
+      properties:
+        code:
+          description: >-
+            Fault code in the native representation of the entity.
+          type: string
+          example: '0012E3'
+        scope:
+          description: >-
+            Defines the scope (e.g., user-defined fault memories) for fault entries.
+            The capability description defines which scopes are supported.
+          type: string
+          example: Default
+        display_code:
+          description: >-
+            Display representation for the fault code.
+          type: string
+          example: P102
+        fault_name:
+          description: >-
+            Name / description of the fault
+          type: string
+          example: No signal from sensor
+        fault_translation_id:
+          description: >-
+            Optional identifier for translating the name
+          type: string
+          example: CAMERA_0012E3_tid
+        severity:
+          description: >-
+            Severity defines the impact on the availability of the vehicle. Lower number means higher severity.
+            For a classic ECU this resembles the level from ODX, for HPCs the SOVD API recommends
+            1 = FATAL,
+            2 = ERROR,
+            3 = WARN, and
+            4 = INFO.
+          type: integer
+          example: 1
+        status:
+          description:
+            Detailed status information for the fault as key value pairs. For classic ECU this resembles the status byte of a DTC.
+            The content of the keys and values is OEM-specific. The keys are defined in the capability description. See Notes below.
+          type: object
+        symptom:
+          description: >-
+            Detailed symptom / failure mode information for the fault. For classic ECU this resembles the symptom of a DTC.
+            The content of the attribute is OEM-specific.
+          type: string
+        symptom_transaction_id:
+          description: >-
+            Translation identifier for the symptom name.
+          type: string
+          items:
+            $ref: ../commons/types.yaml#/components/schemas/AnyValue

@@ -1,0 +1,70 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Parameter Definitions
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Parameter Definitions
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Common parameter definitions used by multiple services
+
+paths: {}
+
+components:
+  parameters:
+    # ------------------------------------------------------------------------
+    FilterByStatus:
+      name: status[key]
+      description: >-
+        Filters the available elements based on a key from the status. The provided value is a full match against the key and value of the attribute status in the response.
+        For filtering by multiple status, the parameter is repeated (0 .. *). If multiple status are provided, they are logically OR combined.
+        The keys supported by an entity are defined in the capability description of the entity.
+      in: query
+      required: false
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    FilterBySeverity:
+      name: severity
+      description: >-
+        Filter fault entries by their severity. Any fault with a severity
+        below the given number will be included in the response.
+      in: query
+      required: false
+      schema:
+        type: integer
+
+    # ------------------------------------------------------------------------
+    Scope:
+      name: scope
+      description: >-
+        The scope (e.g. user-defined error memories) for which faults are retrieved.
+        The capability description defines which scopes are supported.
+      in: query
+      required: false
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    FaultCode:
+      name: fault-code
+      description: >-
+        The scope (e.g. user-defined error memories) for which faults are retrieved.
+        The capability description defines which scopes are supported.
+      in: path
+      required: true
+      schema:
+        type: string

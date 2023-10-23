@@ -1,0 +1,173 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# Service-Oriented Vehicle Diagnostic API    
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: Service-Oriented Vehicle Diagnostic API    
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of ASAM SOVD API
+  contact:
+    url: https://www.asam.net/project-detail/sovd-service-oriented-vehicle-diagnostics/
+
+tags:
+  - name: data-retrieval
+    description: >-
+      Methods for data resource read / write access
+  - name: configurations
+    description: >-
+      Methods for configuration
+  - name: bulk-data
+    description: >-
+      Methods for handling of bulk-data
+  - name: logging
+    description: >-
+      Methods for logging
+  - name: locking
+    description: >-
+      Methods for locking
+  - name: capabilities
+    description: >-
+      Methods for access to cpability description content
+  - name: fault-handling
+    description: >-
+      Methods for fault handling
+  - name: updates
+    description: >-
+      Methods for software updates
+  - name: discovery
+    description: >-
+      Methods for discovering of entities and resources
+  - name: operations-control
+    description: >-
+      Methods for control of operations
+  - name: target-modes
+    description: >-
+      Methods for support of target modes
+
+servers:
+  - url: https://sovd.server/v1
+
+
+paths:
+  /{any-path}/docs:
+    $ref: capability-description/capability-description.yaml#/paths/~1%7Bany-path%7D~1docs
+
+  /{entity-collection}/{entity-id}/data-categories:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data-categories
+
+  /{entity-collection}/{entity-id}/data-groups:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data-groups
+
+  /{entity-collection}/{entity-id}/data:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data
+
+  /{entity-collection}/{entity-id}/data/{data-id}:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data~1%7Bdata-id%7D
+
+  /{entity-collection}/{entity-id}/data-lists:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data-lists
+
+  /{entity-collection}/{entity-id}/data-lists/{data-list-id}:
+    $ref: data/data.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1data-lists~1%7Bdata-list-id%7D
+
+  /{entity-collection}:
+    $ref: discovery/discovery.yaml#/paths/~1%7Bentity-collection%7D
+
+  /areas/{area-id}/subareas:
+    $ref: discovery/discovery.yaml#/paths/~1areas~1%7Barea-id%7D~1subareas
+
+  /components/{component-id}/subcomponents:
+    $ref: discovery/discovery.yaml#/paths/~1components~1%7Bcomponent-id%7D~1subcomponents
+
+  /areas/{area-id}/related-components:
+    $ref: discovery/discovery.yaml#/paths/~1areas~1%7Barea-id%7D~1related-components
+
+  /components/{component-id}/related-apps:
+    $ref: discovery/discovery.yaml#/paths/~1components~1%7Bcomponent-id%7D~1related-apps
+
+  /{entity-collection}/{entity-id}:
+    $ref: discovery/discovery.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D
+
+  /{entity-collection}/{entity-id}/configurations:
+    $ref: configurations/configurations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1configurations
+
+  /{entity-collection}/{entity-id}/configurations/{configuration-id}:
+    $ref: configurations/configurations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1configurations~1%7Bconfiguration-id%7D
+
+  /{entity-collection}/{entity-id}/operations:
+    $ref: operations/operations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1operations
+
+  /{entity-collection}/{entity-id}/operations/{operation-id}:
+    $ref: operations/operations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1operations~1%7Boperation-id%7D
+
+  /{entity-collection}/{entity-id}/operations/{operation-id}/executions:
+    $ref: operations/operations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1operations~1%7Boperation-id%7D~1executions
+
+  /{entity-collection}/{entity-id}/operations/{operation-id}/executions/{execution-id}:
+    $ref: operations/operations.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1operations~1%7Boperation-id%7D~1executions~1%7Bexecution-id%7D
+
+  /{entity-collection}/{entity-id}/modes:
+    $ref: modes/modes.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1modes
+
+  /{entity-collection}/{entity-id}/modes/{mode-id}:
+    $ref: modes/modes.yaml#/paths/~1%7Bentity-collection}~1%7Bentity-id%7D~1modes~1%7Bmode-id%7D
+
+  /{entity-collection}/{entity-id}/logs/entries:
+    $ref: logs/logs.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1logs~1entries
+
+  /{entity-collection}/{entity-id}/logs/config:
+    $ref: logs/logs.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1logs~1config
+  /{entity-collection}/{entity-id}/locks:
+    $ref: locks/locks.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1locks
+
+  /{entity-collection}/{entity-id}/locks/{lock-id}:
+    $ref: locks/locks.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1locks~1%7Block-id%7D
+  /{entity-collection}/{entity-id}/bulk-data:
+    $ref: bulkdata/bulkdata.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1bulk-data
+
+  /{entity-collection}/{entity-id}/bulk-data/{category}:
+    $ref: bulkdata/bulkdata.yaml#/paths/~1{entity-collection}~1{entity-id}~1bulk-data~1{category}
+
+  /{entity-collection}/{entity-id}/bulk-data/{category}/{bulk-data-id}:
+    $ref: bulkdata/bulkdata.yaml#/paths/~1{entity-collection}~1{entity-id}~1bulk-data~1{category}~1{bulk-data-id}
+
+  /updates:
+    $ref: software-updates/software-updates.yaml#/paths/~1updates
+
+  /{entity-collection}/{entity-id}/updates:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates~1%7Bupdate-package-id%7D
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/automated:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates~1%7Bupdate-package-id%7D~1automated
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/execute:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates~1%7Bupdate-package-id%7D~1execute
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/prepare:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates~1%7Bupdate-package-id%7D~1prepare
+
+  /{entity-collection}/{entity-id}/updates/{update-package-id}/status:
+    $ref: software-updates/software-updates.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1updates~1%7Bupdate-package-id%7D~1status
+
+  /{entity-collection}/{entity-id}/faults:
+    $ref: faults/faults.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1faults
+
+  /{entity-collection}/{entity-id}/faults/{fault-code}:
+    $ref: faults/faults.yaml#/paths/~1%7Bentity-collection%7D~1%7Bentity-id%7D~1faults~1%7Bfault-code%7D
+

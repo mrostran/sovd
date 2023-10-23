@@ -1,0 +1,107 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Fault Handling
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Fault Handling
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/faults:
+    get:
+      description: >-
+        This method provides the fault entries which are detected for an entity, if no query parameter is used.
+        The returned fault entries may be filtered by their status.
+      operationId: getFaults
+      tags:
+        - fault-handling
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+        - $ref: parameters.yaml#/components/parameters/FilterByStatus
+        - $ref: parameters.yaml#/components/parameters/FilterBySeverity
+        - $ref: parameters.yaml#/components/parameters/Scope
+      responses:
+        "200":
+          $ref: responses.yaml#/components/responses/ListOfFaults
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    delete:
+      description: >-
+        This method deletes all fault entries of an entity.
+      operationId: deleteAllFaults
+      tags:
+        - fault-handling
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/Scope
+      responses:
+        "204":
+          description: >-
+            The request was successful.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/faults/{fault-code}:
+    get:
+      description: >-
+        This method provides the details for a fault-code.
+      operationId: getFaultById
+      tags:
+        - fault-handling
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/FaultCode
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/FaultDetails
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    delete:
+      description: >-
+        This method deletes the given fault entry from an entity.
+      operationId: deleteFaultById
+      tags:
+        - fault-handling
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/FaultCode
+      responses:
+        "204":
+          description: >-
+            Fault entry has been deleted successfully.
+        "404":
+          description: >-
+            The SOVD client tried to delete a fault entry which is not defined for the entity.
+        "409":
+          description: >-
+            The SOVD client does not fulfill the conditions for deleting a single DTC, e.g., the DTC is safety relevant.
+            The SOVD server should supply SOVD REST API ASAM SOVD, API Specification Version 1.0.0 57
+            information in the GenericError which condition is not met (e.g., safety conditions, DTC not set, …)
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        "501":
+          description: >-
+            The request for deleting single fault entries is not supported by the entity.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError

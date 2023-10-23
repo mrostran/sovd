@@ -1,0 +1,198 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Operations resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Operations resource
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/operations:
+    get:
+      tags:
+        - operations-control
+      description: >-
+        This method returns all available operations defined for the given entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/IncludeProximityProof
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/Operations
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/operations/{operation-id}:
+    get:
+      # Defines whether the operation is executed asynchronously.
+      # To be set to yes or no for each operation
+      x-sovd-asynchronous-execution: yes
+      tags:
+        - operations-control
+      description: >-
+        This method returns all the details on the specified operation of the given entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/OperationDetails
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/operations/{operation-id}/executions:
+    post:
+      tags:
+        - operations-control
+      description: >-
+        Start Execution of an Operation
+        An operation may support multiple executions in parallel. If this is not supported,
+        this method will return an error if an operation with the same operation-id
+        is already being executed.
+        A successfully started operation is added to the executions collection if it is
+        executed asynchronously. After the asynchronous execution has been finished,
+        the execution resource remains existent and an SOVD client can receive the status.
+        However, the status of the execution cannot be queried indefinitely as an SOVD server
+        implementation may remove the resource, e.g., upon SOVD server restart.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/StartExecution
+      responses:
+        "200":
+          description: >-
+            The operation returned immediately, and the response body
+            contains the final result of the operation (“synchronous execution”).
+          $ref: responses.yaml#/components/responses/StartExecutionSynchronous
+        "202":
+          description: >-
+            The execution of the operation has been triggered by the SOVD server.
+            The successful response code does not indicate that the operation has been started successfully.
+            An SOVD client would then use the method for retrieving the status to request
+            the status of this particular execution instance of the operation (“asynchronous execution”).
+          $ref: responses.yaml#/components/responses/StartExecutionAsynchronous
+        "409":
+          description: >-
+            The method is currently not available, e.g., because the operation is still executing.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    get:
+      tags:
+        - operations-control
+      description: >-
+        This method returns currently existing executions of the given operation.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+      responses:
+        "200":
+          description: >-
+            The request was successful.
+          $ref: responses.yaml#/components/responses/GetExecutions
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/operations/{operation-id}/executions/{execution-id}:
+    get:
+      tags:
+        - operations-control
+      description: >-
+        This method returns the current status of the operation execution.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+        - $ref: parameters.yaml#/components/parameters/ExecutionId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: >-
+            The request was successful.
+          $ref: responses.yaml#/components/responses/GetExecutionStatus
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    delete:
+      tags:
+        - operations-control
+      description: >-
+        This method terminates the execution of the operation and removes it,
+        and the status of the operation can no longer be requested.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+        - $ref: parameters.yaml#/components/parameters/ExecutionId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/StopExecution
+      responses:
+        "204":
+          description: >-
+            The request was successful.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+    put:
+      # Defines the capabilities of the operation.
+      # To be adjusted for each operation to execute, freeze and/or reset
+      x-sovd-capabilities:
+        - execute
+        - freeze
+        - reset
+      tags:
+        - operations-control
+      description: >-
+        This method executes the given capability on the provided operation.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/OperationId
+        - $ref: parameters.yaml#/components/parameters/ExecutionId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/OtherCapabilities
+      responses:
+        "202":
+          description: >-
+            The execution of the capability has been triggered by the SOVD server.
+            The successful response code does not indicate that the operation
+            has executed the capability successfully.
+          $ref: responses.yaml#/components/responses/StartExecutionAsynchronous
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+
+
+
+
+
+

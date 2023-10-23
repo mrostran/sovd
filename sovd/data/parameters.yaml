@@ -1,0 +1,71 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Parameter Definitions
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Parameter Definitions
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Common parameter definitions used by multiple services
+
+paths: {}
+
+components:
+  parameters:
+    # ------------------------------------------------------------------------
+    DataId:
+      name: data-id
+      description: >-
+        The identifier for the data resource
+      in: path
+      required: true
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    DataListId:
+      name: data-list-id
+      description: >-
+        The identifier for the data-list resource
+      in: path
+      required: true
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    FilterByDataCategory:
+      name: category
+      description: >-
+        Filters the available elements based on their category
+      in: query
+      schema:
+        type: array
+        items:
+          $ref: '../commons/types.yaml#/components/schemas/DataCategory'
+      style: form
+      explode: true
+
+    # ------------------------------------------------------------------------
+    FilterByGroup:
+      name: groups
+      description: >-
+        Filters the available elements based on the group they belong to.
+        If an element belongs to multiple groups, it is included if the group is part
+        of these multiple groups.
+      in: query
+      schema:
+        type: string
+      style: form
+      explode: true

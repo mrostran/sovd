@@ -1,0 +1,80 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Configurations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Configurations Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Configurations Resource
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    WriteConfiguration:
+      description: >-
+        Request: Write a data value data to an entity
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  The value of the data. The type of the value is defined by the resource.
+              signature:
+                type: string
+                description: >-
+                  Binary string with signature information (if required by the SOVD server / entity)
+            example:
+              data:
+                MaximumSpeed: 100
+                MinimumDistanceToLine: 10
+                EmergencyLaneDistanceToLine: 5
+              signature: cz71a129fez26sw8
+
+        '*/*':
+          schema:
+            type: string
+            format: binary
+            description: >-
+              The content of the request body is OEM specific. Depending on the implementation,
+              the transferred file can use multipart/signed, multipart/form-data with security parameters
+              in a JSON object, or simply application/octet-stream (if it is not confidential information).
+          examples:
+            FormData:
+              description: >-
+                Example using "Content-Type: multipart/form-data; boundary=formdataboundary"
+              value: >-
+                --formdataboundary
+                Content-Disposition: form-data; name="signature"
+                Content-Type: application/json
+                {
+                  "signature": "84e0982a082024fac464bc5eb69c0745",
+                }
+
+                --formdataboundary
+                Content-Disposition: form-data; name="ObjectRecognitionModel";
+                Content-Type: application/octet-stream
+                [4CD563172A936520162652AA0CC6C9746D82020F7746865206A66F2726F7B96F7521]
+                --formdataboundary
+
+

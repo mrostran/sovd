@@ -1,0 +1,126 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API responses for Target Modes
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API responses for Target Modes
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of responses for Target Modes
+
+paths: {}
+
+components:
+  responses:
+
+    # ------------------------------------------------------------------------
+    SupportedModes:
+      description: >-
+        Response: Retrieve list of all supported modes of an entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                type: array
+                items:
+                  $ref: types.yaml#/components/schemas/ModeCollectionItem
+                description: >-
+                  The list of available modes of an entity.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+            example:
+              items:
+                - id: session
+                  name: Diagnostic session
+
+
+    ModeDetails:
+      description: >-
+        Response: Get details of a single mode of an entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - value
+            properties:
+              name:
+                type: string
+                description: >-
+                  The name of the mode.
+              translation_id:
+                type: string
+                description: >-
+                  Translation identifier for the name
+              value:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  The value of the mode.
+              schema:
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+                description: >-
+                  The schema definition of the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+            example:
+              name: Diagnostic session
+              value: DEFAULT
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - value
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: string
+                    enum:
+                      - DEFAULT
+                      - EXTENDED
+                      - PROGRAMMING
+                    default: DEFAULT
+
+    ControlStates:
+      description: >-
+        Response: Get details of a single mode of an entity
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - id
+              - value
+            properties:
+              id:
+                type: string
+                description: >-
+                  The resource identifier of the mode.
+              value:
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+                description: >-
+                  The value of the mode.
+            example:
+              id: session
+              value: EXTENDED

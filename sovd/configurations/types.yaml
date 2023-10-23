@@ -1,0 +1,71 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Configurations Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Configurations Resource
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types used for Configurations Resource
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    ConfigurationMetaData:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier of a configuration data
+        name:
+          type: string
+          description: >-
+            Name of the configuration data
+        translation_id:
+          type: string
+          description: >-
+            Identifier for translating the configurations data name
+        type:
+          $ref: '#/components/schemas/ConfigurationType'
+          description: Configuration type definition
+        version:
+          type: string
+          description: >-
+            Version of the configuration data.
+            version and content_type are mandatory for bulk data configurations but are not present for parameter-based configurations.
+        content_type:
+          type: string
+          description: >-
+            MIME type with information for the SOVD client about the content type, e.g., XML etc.
+            version and content_type are mandatory for bulk data configurations but are not present for parameter-based configurations.
+
+    # ------------------------------------------------------------------------
+    ConfigurationType:
+      type: string
+      enum:
+        - bulk
+        - parameter
+      description: >-
+        bulk:       The configuration data is provided as bulk data and the
+                    attributes version and content_type define how it is interpreted.
+        parameter:  The configuration is provided as single attributes of a JSON object.
+

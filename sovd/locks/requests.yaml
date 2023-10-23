@@ -1,0 +1,48 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Locking Entities
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Locking Entities
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Locking Entities
+
+paths: {}
+
+components:
+  requestBodies:
+
+    # ------------------------------------------------------------------------
+    LockRequest:
+      description: >-
+        Request body - Acquire a lock on an entity
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - lock_expiration
+            properties:
+              lock_expiration:
+                type: number
+                format: int32
+                description: >-
+                  Defines after how many seconds the lock expires and should therefore be
+                  automatically released by the SOVD server.
+                  The capability description shall define the maximum expiration time.
+            example: 
+              lock_expiration: 1800

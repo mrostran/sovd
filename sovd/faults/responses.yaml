@@ -1,0 +1,140 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Media Types for faults
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Media Types for faults
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of common media types and the schema used by them
+
+paths: {}
+
+components:
+  responses:
+    # ------------------------------------------------------------------------
+    ListOfFaults:
+      description: >-
+        Retrieve list of all faults provided by the entity
+      content:
+        application/json:
+          schema:
+            $ref: types.yaml#/components/schemas/ListOfFaults
+            examples:
+              "Classic ECU":
+                value:
+                  items:
+                    - code: "0012E3"
+                      scope: Default
+                      display_code: P102
+                      fault_name: No signal from sensor
+                      fault_translation_id: CAMERA_0012E3_tid
+                      severity: 1
+                      status:
+                        testFailed: "1"
+                        testFailedThisOperationCycle: "1"
+                        pendingDTC: "1"
+                        confirmedDTC: "1"
+                        testNotCompletedSinceLastClear: "0"
+                        testFailedSinceLastClear: "1"
+                        testNotCompletedThisOperationCycle: "0"
+                        warningIndicatorRequested: "0"
+                        aggregatedStatus: active
+                    - code: "003C01"
+                      scope: Default
+                      display_code: P03C
+                      fault_name: Battery voltage low
+                      fault_translation_id: Low Vbat_tid
+                      severity: 2
+                      status:
+                        testFailed: "1"
+                        testFailedThisOperationCycle: "1"
+                        pendingDTC: "1"
+                        confirmedDTC: "1"
+                        testNotCompletedSinceLastClear: "0"
+                        testFailedSinceLastClear: "1"
+                        testNotCompletedThisOperationCycle: "0"
+                        warningIndicatorRequested: "0"
+                        aggregatedStatus: active
+              "HPC":
+                value:
+                  items:
+                    - code: modelMissing
+                      scope: Default
+                      fault_name: No Object Recognition Model available
+                      fault_translation_id: ALK NoObjModel_tid
+                      severity: 1
+                      status:
+                        aggregatedStatus: active
+
+    # ------------------------------------------------------------------------
+    FaultDetails:
+      description: >-
+        Provide the details for a fault-code.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              -  item
+            properties:
+              item:
+                description: >-
+                  Fault description
+                $ref: types.yaml#/components/schemas/Fault
+              environment_data:
+                description: >-
+                  Additional OEM-specific information describing the environment
+                  of the system at the time of setting the fault.
+                  Condition: Only set if the fault provides the requested information.
+                $ref: ../commons/types.yaml#/components/schemas/AnyValue
+              errors:
+                description: >-
+                  Condition: Only set, if the value environment_data represents an error,
+                  and this attribute describes the error more precisely.
+                type: array
+                items:
+                  $ref: ../commons/errors.yaml#/components/schemas/DataError
+              schema:
+                description: >-
+                  Schema for describing the response.
+                  Condition: Only provided if the query parameter include-schema is true.
+                $ref: ../commons/types.yaml#/components/schemas/OpenApiSchema
+          example:
+            item:
+              code: "0012E3"
+              scope: Default
+              display_code: P102
+              fault_name: No signal from sensor
+              fault_translation_id: CAMERA_0012E3_tid
+              severity: 1
+              status:
+                testFailed: "1"
+                testFailedThisOperationCycle: "1"
+                pendingDTC: "0"
+                confirmedDTC: "1"
+                testNotCompletedSinceLastClear: "1"
+                testFailedSinceLastClear: "0"
+                testNotCompletedThisOperationCycle: "0"
+                warningIndicatorRequested: "0"
+                mask: 1E
+                aggregatedStatus: active
+            environment_data:
+              id: env_data
+              data:
+                battery_voltage: 12.8
+                occurence_counter: 12
+                first_occurence: 2021-06-22T11:47:22Z
+                last_occurence: 2021-07-01T10:12:53Z

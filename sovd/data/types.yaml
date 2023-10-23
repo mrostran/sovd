@@ -1,0 +1,76 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Data Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Data Resource
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types used for Data Resource
+
+paths: {}
+
+components:
+  schemas:
+
+    # ------------------------------------------------------------------------
+    ValueGroup:
+      description: >-
+        ValueGroup type
+      type: object
+      required:
+        - id
+        - category
+      properties:
+        id:
+          type: string
+          description: >-
+            Unique identifier for a group across all categories
+        category:
+          $ref: "../commons/types.yaml#/components/schemas/DataCategory"
+          description: >-
+            Category for which the group is defined
+        category_translation_id:
+          type: string
+          description: >-
+            Identifier for translating the category name
+        group:
+          type: string
+          description: >-
+            Name of the group
+        group_translation_id:
+          type: string
+          description: >-
+            Identifier for translating the group name
+
+    # ------------------------------------------------------------------------
+    DataListEntry:
+      description: >-
+        Describes one specific data-list provided by the entity
+      type: object
+      required:
+        - id
+        - items
+      properties:
+        id:
+          type: string
+          description: "Identifier of the data list"
+        items:
+          type: array
+          items:
+            $ref: ../commons/types.yaml#/components/schemas/ValueMetadata
+
+
+

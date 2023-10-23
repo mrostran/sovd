@@ -1,0 +1,208 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API for Data Retrieval
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API for Data Retrieval
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+
+paths:
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data-categories:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        This method returns the data categories provided by an entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/DataCategories
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data-groups:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        This method provides the groups defined for an entity.
+        Groups are associated with a category. The concept of groups is
+        not intended to be used for partitioning data from different
+        subcomponents, e.g., LIN slaves should be mapped to subcomponents
+        of the master ECU and are thus accessible using
+        a URI like components/master/subcomponents/lin-slave.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/DataGroups
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        This method provides the list of all data resources available for an entity. The returned data may be
+        filtered by their category (e.g., to limit the list to current data values) or by their group identifiers.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/FilterByGroup
+        - $ref: parameters.yaml#/components/parameters/FilterByDataCategory
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/Datas
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data/{data-id}:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        This method retrieves the value of a single data resource, like VIN,
+        battery voltage, or CPU load. The response includes all values associated
+        with the resource and cannot be filtered down to individual attributes of the resource.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/DataId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/Data
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    put:
+      tags:
+        - data-retrieval
+      description: >-
+        This method writes the value of a data resource of an entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/DataId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/WriteValue
+      responses:
+        "204":
+          description: Data written.
+        "400":
+          $ref: ../commons/responses.yaml#/components/responses/DataError
+          description: >-
+            The request body does either not contain all required parameter values
+            or the signature for the provided values is wrong.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data-lists:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        Provides the list of all data-lists resources available for an entity.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      responses:
+        "200":
+          description: The request was successful
+          $ref: responses.yaml#/components/responses/DataLists
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    post:
+      tags:
+        - data-retrieval
+      description: >-
+        This method creates a temporary resource for reading multiple data resources
+        with one request from an entity. The identifiers of the requested data resources
+        of the given entity shall be listed in the request body.
+        The SOVD API does not impose any restrictions on the category or group of the
+        identifier, especially identifiers from different groups and categories maybe mixed.
+        The resource has to be deleted explicitly by the SOVD client. If the SOVD client
+        does not delete the resource, the SOVD server can delete it after a certain period
+        if the resource is not used anymore or upon SOVD server restart.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+      requestBody:
+        $ref: requests.yaml#/components/requestBodies/DataList
+      responses:
+        '201':
+          description: The SOVD server created the data list.
+          $ref: responses.yaml#/components/responses/DataListIdentifier
+        '501':
+          description: >-
+            The SOVD server does not support the creation of data list resources
+        '400':
+          description: >-
+            The SOVD client request included a resource identifier which does not exist.
+            The identifiers are listed in the error.
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
+  # ------------------------------------------------------------------------
+  /{entity-collection}/{entity-id}/data-lists/{data-list-id}:
+    get:
+      tags:
+        - data-retrieval
+      description: >-
+        This method returns the values defined by the given data list.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/DataListId
+        - $ref: ../commons/parameters.yaml#/components/parameters/IncludeSchema
+      responses:
+        "200":
+          description: The request was successful.
+          $ref: responses.yaml#/components/responses/ReadDataList
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+    delete:
+      tags:
+        - data-retrieval
+      description: >-
+        This method removes the temporarily defined data list.
+      parameters:
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityCollection
+        - $ref: ../commons/parameters.yaml#/components/parameters/EntityId
+        - $ref: parameters.yaml#/components/parameters/DataListId
+      responses:
+        "204":
+          description: The request was successful.
+        default:
+          $ref: ../commons/responses.yaml#/components/responses/GenericError
+
