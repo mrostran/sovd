@@ -1,0 +1,115 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Parameter Definitions for Bulk Data
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Parameter Definitions for Bulk Data
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of Parameters for Bulk Data
+
+paths: {}
+
+components:
+  parameters:
+    # ------------------------------------------------------------------------
+    Category:
+      name: category
+      description: >-
+        The category represents a logical grouping of bulk data exposed by the SOVD
+        server implementation, e.g., POIs stored on a navigation unit.
+      in: path
+      required: true
+      schema:
+        $ref: types.yaml#/components/schemas/BulkDataCategory
+
+    # ------------------------------------------------------------------------
+    BulkDataId:
+      name: bulk-data-id
+      description: Bulk data identifier
+      in: path
+      required: true
+      schema:
+        type: string
+
+    # ------------------------------------------------------------------------
+    AcceptHeader:
+      name: Accept
+      description: >-
+        This method does not require any request headers. However, if an SOVD client
+        requires a proof-of-origin, the Accept header has to be set with the value
+        multipart/signed. The SOVD server will then sign the transferred data and set
+        Content-Type header to multipart/signed instead of multipart/form-data. OEMs may,
+        alternatively, decide to use multipart/form-data and include the security artefacts
+        within the application/json part using OEM specific formats.
+      in: header
+      required: false
+      schema:
+        type: string
+      examples:
+        signed:
+          value: multipart/signed
+        form-data:
+          value: multipart/form-data
+
+    # ------------------------------------------------------------------------
+    ContentTypeHeader:
+      name: Content-Type
+      description: Depends on Request Body
+      in: header
+      required: true
+      schema:
+        type: string
+      examples:
+        signed:
+          value: multipart/signed
+        form-data:
+          value: >-
+            multipart/form-data; boundary=formdataboundary
+        binary:
+          value: application/octet-stream
+
+    # ------------------------------------------------------------------------
+    ContentLengthHeader:
+      name: Content-Length
+      description: Size of the content
+      in: header
+      required: true
+      schema:
+        type: integer
+        example: 2740
+
+    # ------------------------------------------------------------------------
+    ContentDispositionHeader:
+      name: Content-Disposition
+      description: >-
+        Provides more information on the content and shall at least have the attribute name
+        to give the SOVD server a hint on what is meant specifically. In addition, the attribute
+        filename may be set to propose a file name in case the bulk data is stored on the file
+        system. However, an SOVD server may also discard the proposed file name.
+      in: header
+      required: true
+      schema:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          filename:
+            type: string
+      example: >-
+        form-data;name="GasStations";filename="gas-stations.kml"
+

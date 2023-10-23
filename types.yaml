@@ -1,0 +1,72 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API Types for Bulk Data
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms. 
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API Types for Bulk Data
+  license: 
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of types used for Bulk Data
+
+paths: {}
+
+components:
+  schemas:
+    # ------------------------------------------------------------------------
+    BulkDataCategory:
+      description: These enumeration values are an example and not normative.
+      type: string
+      enum:
+        - maps
+        - pois
+        - logs
+
+    # ------------------------------------------------------------------------
+    BulkDataDescriptor:
+      description: A meta data entry describing a bulk data item.
+      type: object
+      required:
+        - id
+        - mimetype
+      properties:
+        id:
+          type: string
+          description: A unique identifier for the bulk data managed by the SOVD server to identify the bulk data.
+        mimetype:
+          type: string
+          description: Specifies the MIME type of the bulk data.
+        name:
+          type: string
+          description: Name / description of the bulk data.
+        translation_id:
+          type: string
+          description: Identifier for translating the name.
+        size:
+          type: integer
+          description: Size of the bulk data in bytes.
+        creation_date:
+          type: string
+          format: date-time
+          description: Time and date of the creation of the bulk data.
+        last_modified:
+          type: string
+          format: date-time
+          description: Time and date of the last modification of the bulk data.
+        hash:
+          type: string
+          description: Hash value of the bulk data for verifying the integrity of the bulk data after transfer.
+        hash_algorithm:
+          type: string
+          description: Algorithm used to generate the hash.

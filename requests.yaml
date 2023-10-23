@@ -1,0 +1,56 @@
+openapi: 3.1.0
+
+# ASAM SOVD V1.0.0
+
+# © by ASAM e.V., 2022
+
+# SOVD API request bodies for Bulk Data Resource
+# This file is informative. The normative REST API definition is published in the specification.
+
+
+# Any use is limited to the scope described in the ASAM license terms.
+# See http://www.asam.net/license.html  for further details.
+
+info:
+  title: SOVD API request bodies for Bulk Data Resource
+  license:
+    name: Licensing Terms for Grant of Rights to Use ASAM Products
+    url: https://www.asam.net/license/
+  version: 1.0.0
+  description: >-
+    Definition of request bodies for Bulk Data Resource
+
+paths: {}
+
+components:
+  requestBodies:
+    # ------------------------------------------------------------------------
+    BulkDataUpload:
+      description: >-
+        Request body - Upload bulk data
+      required: true
+      content:
+        '*/*':
+          schema:
+            type: string
+            format: binary
+            description: >-
+              The content of the request body is OEM specific. Depending on the implementation, the transferred
+              bulk data can use multipart/signed, multipart/form-data with security parameters in a JSON object,
+              or simply application/octet-stream (if it is not confidential information).
+          examples:
+            FormData:
+              description: >-
+                Example using "Content-Type: multipart/form-data; boundary=formdataboundary"
+              value: >-
+                --formdataboundary
+                Content-Disposition: form-data; name="signature"
+                Content-Type: application/json
+                {
+                  "signature": "925b36e5bce4966f6ede24f0f4ec7a56",
+                }
+                --formdataboundary
+                Content-Disposition: form-data;name="GasStations";file-name="gas-stations.kml"
+                Content-Type: application/octet-stream
+                [File content]
+                --formdataboundary
